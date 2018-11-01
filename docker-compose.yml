@@ -1,0 +1,41 @@
+version: '3.5'
+# version of compose file format, find it here https://docs.docker.com/compose/compose-file/
+
+services:
+  smart-brain-api:
+    container_name: backend
+    # image: node:carbon #not needed because we will use image from build
+    build: ./ #build usings setting from Dockerfile instead of setting here
+    command: bash -c "npm cache clean --force && npm start" #run this command when container service is up
+    working_dir: /usr/src/smart-brain-api #working directory, need to be same with Dockerfile work directory
+    environment: # environment variable
+      POSTGRES_URI: postgres://sally:secret@postgres:5432/smart-brain-docker # URI is unique resource identifier
+      # POSTGRES_USER: sally
+      # POSTGRES_PASSWORD: secret
+      # POSTGRES_DB: smart-brain-docker
+      # POSTGRES_HOST: postgres
+    # links: #link to postgres microservice, but this is a legacy function and not required anymore
+    #  - postgres
+    ports:
+      # port forwarding, docker-compose run command doesnt creat this ports
+      # docker-compose up or docker-compose run --service-ports creat port
+      - '3000:3000'
+      # environment：#environ
+      # link: #link to what service
+    volumes: # map host volume to container volume
+      - ./:/usr/src/smart-brain-api # relative path work in docker compose but not docker
+    # - //d/Repos/Web-Dev/022-CodeAnalysis/smart-brain-api://usr/src/smart-brain-api # absolute path
+    # in this case, map everything in this directory to working directory
+
+  # postgres
+  postgres:
+    container_name: postgres # posgrest already has the name set so no need to name the container according to andrei but it actually work fine
+    environment: # environment variable
+      POSTGRES_USER: sally
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: smart-brain-docker
+      POSTGRES_HOST: postgres
+    # image: postgres
+    build: ./postgres # use build instead of image when we want to use dockerfile
+    ports:
+      - '5433:5432'

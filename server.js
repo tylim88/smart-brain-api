@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex');
 require('dotenv').config();
+const morgan = require('morgan');
 
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
@@ -12,21 +13,24 @@ const image = require('./controllers/image');
 
 const db = knex({
   client: 'pg',
-  connection: {
-    host: '127.0.0.1',
-    user: 'postgres',
-    password: process.env.DB_PASS,
-    database: 'smart-brain'
-  }
+  connection: process.env.POSTGRES_URI
+  // connection: {
+  //   //host: '127.0.0.1',
+  //   host: process.env.POSTGRES_HOST,
+  //   user: process.env.POSTGRES_USER,
+  //   password: process.env.POSTGRES_PASSWORD,
+  //   database: process.env.POSTGRES_DB
+  // }
 });
 
 const app = express();
-
+console.log('1211');
 app.use(cors());
 app.use(bodyParser.json());
+app.use(morgan('combined'));
 
 app.get('/', (req, res) => {
-  res.send(database.users);
+  res.send('it is working');
 });
 app.post('/signin', signin.handleSignin(db, bcrypt));
 app.post('/register', (req, res) => {
