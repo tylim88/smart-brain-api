@@ -9,7 +9,10 @@ services:
     command: bash -c "npm cache clean --force && npm start" #run this command when container service is up
     working_dir: /usr/src/smart-brain-api #working directory, need to be same with Dockerfile work directory
     environment: # environment variable
+      REDIS_URL: redis://redis # default port is 6379
+      # <service name>://>container name>:<port>
       POSTGRES_URI: postgres://sally:secret@postgres:5432/smart-brain-docker # URI is unique resource identifier
+      # after @ is the microservice name, it is how it identify which service to connect
       # POSTGRES_USER: sally
       # POSTGRES_PASSWORD: secret
       # POSTGRES_DB: smart-brain-docker
@@ -39,3 +42,10 @@ services:
     build: ./postgres # use build instead of image when we want to use dockerfile
     ports:
       - '5433:5432'
+
+  #redis
+  redis:
+    container_name: redis
+    build: ./redis
+    ports:
+      - '6379:6379'
